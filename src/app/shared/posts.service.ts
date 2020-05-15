@@ -22,13 +22,32 @@ export class PostsService {
 
   getAll(): Observable<Post[]> {
     return this.http.get(`${environment.fbDbUrl}/posts.json`)
-      .pipe(map((res:{[key: string]: any}) => {
+      .pipe(map((res: {[key: string]: any}) => {
         return Object.keys(res).map(key => ({
           ...res[key],
           id: key,
           date: new Date(res[key].date)
         }));
       }));
+  }
+
+  getById(id: string): Observable<Post> {
+    return this.http.get(`${environment.fbDbUrl}/posts/${id}.json`)
+      .pipe(map((post: Post) => {
+        return {
+          ...post,
+          id,
+          date: new Date(post.date)
+        };
+      }));
+  }
+
+  remove(id: string): Observable<void> {
+    return this.http.delete<void>(`${environment.fbDbUrl}/posts/${id}.json`);
+  }
+
+  update(post: Post): Observable<Post> {
+    return this.http.patch<Post>(`${environment.fbDbUrl}/posts/${post.id}.json`, post);
   }
 
 }
